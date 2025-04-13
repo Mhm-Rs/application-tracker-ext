@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "Application Tracker",
+    "version": "1.0",
+    "description": "Track your job applications, effortlessly.",
+    "permissions": ["scripting", "activeTab"],
+    "host_permissions": [
+      "https://api.notion.com/*",
+      "https://fr.indeed.com/viewjob*",
+      "https://fr.indeed.com/jobs*",
+      "https://www.linkedin.com/jobs*"
+    ],
+    "content_scripts": [
+      {
+        "matches": ["https://fr.indeed.com/viewjob*", "https://www.linkedin.com/jobs*", "https://fr.indeed.com/jobs*"],
+        "js": ["websiteSelectors.js", "skillsData.js", "content.js"]
+      }
+    ],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_title": "Application Tracker"
+    }
+  }
