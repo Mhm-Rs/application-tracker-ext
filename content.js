@@ -4,18 +4,30 @@ function observeUrlChanges() {
   setInterval(() => {
     const currentUrl = location.href;
     if (currentUrl !== lastUrl) {
-      lastUrl = currentUrl;
       console.log("🔄 URL changée :", currentUrl);
 
       // Supprimer l’ancien widget s’il existe
       document.querySelector("#application-tracker-widget")?.remove();
+      lastUrl = currentUrl;
 
-      // On attend un peu que le contenu se charge avant d’appeler createWidget
-      setTimeout(() => {
-        createWidget();
-      }, 1000);
+      if (shouldInjectWidget(currentUrl)) {
+        setTimeout(() => {
+          createWidget();
+        }, 1000);
+      }
     }
   }, 500); // vérifie deux fois par seconde
+}
+
+function shouldInjectWidget(url) {
+  for (const pattern of authorizedUrls) {
+    // Utiliser un simple test de correspondance avec un regex
+    const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+    if (regex.test(url)) {
+      return true;  
+    }
+  }
+  return false;  
 }
 
 observeUrlChanges();
@@ -66,11 +78,11 @@ function createWidget() {
     chrome.runtime.sendMessage({ action: "saveToTracker", payload: jobDetails}, (response) => {
       if (chrome.runtime.lastError) {
         console.error("❌ Erreur de message :", chrome.runtime.lastError.message);
-        showPopup("Erreur : " + chrome.runtime.lastError.message, true);
+        showPopup("Erreur de Chrome : " + handleErrorMessage(chrome.runtime.lastError.message), true);
       } else if (response.success) {
         showPopup("Ajouté à Notion ✅");
       } else {
-        showPopup("Erreur : " + response.error, true);
+        showPopup("❌ Erreur : " + handleErrorMessage(response.error), true);
       }
 
     button.disabled = true;
@@ -155,5 +167,17 @@ function getSiteName(hostname) {
   return hostname;
 }
 
+function handleErrorMessage(errorMessage) {
+  console.log("Message d'erreur reçu : " + errorMessage)
+   if (errorMessage.match("body failed validation")) {
+      return "Les informations de l'offre n'ont pas pu être récupérées."
+   } else if (errorMessage.match("is not a property that exists") || errorMessage.match("is expected to be")) {
+      return "La base de données Notion utilisée n'est pas compatible."
+   } else {
+    return errorMessage
+   }
+}
 
-createWidget();
+if (shouldInjectWidget(location.href)) {
+    createWidget();
+}

@@ -6,14 +6,39 @@
     "permissions": ["scripting", "activeTab"],
     "host_permissions": [
       "https://api.notion.com/*",
+
       "https://fr.indeed.com/viewjob*",
       "https://fr.indeed.com/jobs*",
-      "https://www.linkedin.com/jobs*"
+
+      "https://www.linkedin.com/jobs*",
+
+      "https://www.glassdoor.fr/Emploi*",
+      "https://www.glassdoor.fr/job-listing*",
+
+      "https://www.welcometothejungle.com/fr/companies*",
+
+      "https://www.monster.fr/emploi/recherche*",
+      "https://www.monster.fr/offres-demploi*"
+
     ],
     "content_scripts": [
       {
-        "matches": ["https://fr.indeed.com/viewjob*", "https://www.linkedin.com/jobs*", "https://fr.indeed.com/jobs*"],
-        "js": ["websiteSelectors.js", "skillsData.js", "content.js"]
+        "matches": [
+          "https://fr.indeed.com/viewjob*",
+          "https://fr.indeed.com/jobs*", 
+
+          "https://www.linkedin.com/jobs*",
+
+          "https://www.glassdoor.fr/Emploi*",
+          "https://www.glassdoor.fr/job-listing*",
+
+          "https://www.welcometothejungle.com/fr/companies*",
+
+          "https://www.monster.fr/emploi/recherche*",
+          "https://www.monster.fr/offres-demploi*"
+          
+        ],
+        "js": ["authorizedUrls.js", "websiteSelectors.js", "skillsData.js", "content.js"]
       }
     ],
     "background": {
