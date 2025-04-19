@@ -104,7 +104,6 @@ const skillsData = {
       // Outils de gestion de la configuration
       "Ansible",
       "Puppet",
-      "Chef",
       "SaltStack",
   
       // Outils d'automatisation

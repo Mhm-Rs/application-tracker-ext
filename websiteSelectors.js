@@ -27,6 +27,6 @@ const websiteSelectors = {
         jobTitle:"h2[data-testid='jobTitle']",
         companyName:"li[data-testid='company']",
         location:"li[data-testid='jobDetailLocation']",
-        jobDescription:"div[data-testid='svx-description-container-inner'] > div, .content_IA.p-inline_IA",
+        jobDescription:"div[data-testid='svx-description-container-inner'] > div",
     },
 };

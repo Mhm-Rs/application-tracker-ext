@@ -1,3 +1,9 @@
+/*
+*
+  Gestion du reload pour supprimer/afficher le widget, compatible SPA
+*
+*/
+
 function observeUrlChanges() {
   let lastUrl = location.href;
 
@@ -22,22 +28,48 @@ function observeUrlChanges() {
 function shouldInjectWidget(url) {
   for (const pattern of authorizedUrls) {
     // Utiliser un simple test de correspondance avec un regex
-    const regex = new RegExp('^' + pattern.replace(/\*/g, '.*') + '$');
+    const regex = new RegExp("^" + pattern.replace(/\*/g, ".*") + "$");
     if (regex.test(url)) {
-      return true;  
+      return true;
     }
   }
-  return false;  
+  return false;
 }
 
-observeUrlChanges();
+/*
+*
+  Spinner pour le widget
+*
+*/
 
+const style = document.createElement("style");
+style.textContent = `
+  .spinner {
+    border: 2px solid white;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+`;
+document.head.appendChild(style);
+
+/*
+*
+  Gestion du widget
+*
+*/
 
 function createWidget() {
-
-   // Supprimer un widget existant s’il est déjà présent
-   const existingWidget = document.querySelector("#application-tracker-widget");
-   if (existingWidget) existingWidget.remove();
+  // Supprimer un widget existant s’il est déjà présent
+  const existingWidget = document.querySelector("#application-tracker-widget");
+  if (existingWidget) existingWidget.remove();
 
   const container = document.createElement("div");
   container.id = "application-tracker-widget";
@@ -73,29 +105,42 @@ function createWidget() {
 
   button.addEventListener("click", () => {
     const jobDetails = extractJobDetails();
-    console.log("The job details I got : ",jobDetails)
-    
-    chrome.runtime.sendMessage({ action: "saveToTracker", payload: jobDetails}, (response) => {
-      if (chrome.runtime.lastError) {
-        console.error("❌ Erreur de message :", chrome.runtime.lastError.message);
-        showPopup("Erreur de Chrome : " + handleErrorMessage(chrome.runtime.lastError.message), true);
-      } else if (response.success) {
-        showPopup("Ajouté à Notion ✅");
-      } else {
-        showPopup("❌ Erreur : " + handleErrorMessage(response.error), true);
-      }
+    console.log("The job details I got : ", jobDetails);
 
+    // 🔄 Ajout du spinner
+    const originalContent = button.innerHTML;
     button.disabled = true;
-    button.style.backgroundColor = "#1e7e34"; // vert plus foncé
-    button.textContent = "✓ Enregistré !";
+    button.innerHTML = `<div class="spinner"></div>`;
 
+    chrome.runtime.sendMessage(
+      { action: "saveToTracker", payload: jobDetails },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error(
+            "❌ Erreur de message :",
+            chrome.runtime.lastError.message
+          );
+          showPopup(
+            "Erreur de Chrome : " +
+              handleErrorMessage(chrome.runtime.lastError.message),
+            true
+          );
+        } else if (response.success) {
+          showPopup("Ajouté à Notion ✅");
+        } else {
+          showPopup("❌ Erreur : " + handleErrorMessage(response.error), true);
+        }
 
-      setTimeout(() => {
-        button.disabled = false;
-        button.style.backgroundColor = "#28a745";
-        button.textContent = "Save to Tracker";
-      }, 1500);
-    });
+        button.style.backgroundColor = "#1e7e34";
+        button.textContent = "✓ Enregistré !";
+
+        setTimeout(() => {
+          button.disabled = false;
+          button.style.backgroundColor = "#28a745";
+          button.innerHTML = originalContent;
+        }, 1500);
+      }
+    );
   });
 
   container.appendChild(title);
@@ -130,24 +175,45 @@ function showPopup(message, isError = false) {
   }, 2000);
 }
 
+/*
+*
+  Fonctions utilitaires
+*
+*/
 
 function extractJobDetails() {
   const selector = websiteSelectors[getSiteName(window.location.hostname)];
 
-  const jobTitle = document.querySelector(selector.jobTitle)?.textContent.trim();
-  const companyName = document.querySelector(selector.companyName)?.textContent.trim();
-  const location = document.querySelector(selector.location)?.textContent.trim();
-  const jobDescription = document.querySelector(selector.jobDescription)?.textContent.trim();
+  const jobTitle = document
+    .querySelector(selector.jobTitle)
+    ?.textContent.trim();
+  const companyName = document
+    .querySelector(selector.companyName)
+    ?.textContent.trim();
+  const location = document
+    .querySelector(selector.location)
+    ?.textContent.trim();
+  const jobDescription = document
+    .querySelector(selector.jobDescription)
+    ?.textContent.trim();
   const jobUrl = window.location.href;
 
   // Extraire les compétences mentionnées
   const skillsRegex = new RegExp(skillsData.skills.join("|"), "gi");
-  // Utilisation de la regex pour extraire les compétences
   let skills = jobDescription?.match(skillsRegex) || [];
 
   // Enlever les doublons
-  if (skills.length > 0) {
-    skills = [...new Set(skills)]; 
+  if (skills && skills.length > 0) {
+    const normalizedSkills = [
+      ...new Set(skills.map((skill) => skill.toLowerCase())),
+    ];
+
+    // Capitaliser
+    skills = normalizedSkills.map(
+      (skill) => skill.charAt(0).toUpperCase() + skill.slice(1)
+    );
+  } else if (skills.length == 0) {
+    skills = ["No skill found."];
   }
 
   return {
@@ -155,29 +221,45 @@ function extractJobDetails() {
     companyName,
     location,
     skills,
-    jobUrl
+    jobUrl,
   };
 }
 
 function getSiteName(hostname) {
-  const parts = hostname.split('.');
+  const parts = hostname.split(".");
   if (parts.length >= 2) {
-    return parts[parts.length - 2]; // "indeed" ou "linkedin"
+    return parts[parts.length - 2];
   }
   return hostname;
 }
 
+/*
+*
+  Gestion des erreurs
+*
+*/
+
 function handleErrorMessage(errorMessage) {
-  console.log("Message d'erreur reçu : " + errorMessage)
-   if (errorMessage.match("body failed validation")) {
-      return "Les informations de l'offre n'ont pas pu être récupérées."
-   } else if (errorMessage.match("is not a property that exists") || errorMessage.match("is expected to be")) {
-      return "La base de données Notion utilisée n'est pas compatible."
-   } else {
-    return errorMessage
-   }
+  console.log("Message d'erreur reçu : " + errorMessage);
+  if (errorMessage.match("body failed validation")) {
+    return "Les informations de l'offre n'ont pas pu être récupérées.";
+  } else if (
+    errorMessage.match("is not a property that exists") ||
+    errorMessage.match("is expected to be")
+  ) {
+    return "La base de données Notion utilisée n'est pas compatible.";
+  } else {
+    return errorMessage;
+  }
 }
 
+/*
+*
+  Page principale
+*
+*/
+
+observeUrlChanges();
 if (shouldInjectWidget(location.href)) {
-    createWidget();
+  createWidget();
 }
