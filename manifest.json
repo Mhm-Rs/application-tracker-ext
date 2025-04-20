@@ -18,7 +18,9 @@
       "https://www.welcometothejungle.com/fr/companies*",
 
       "https://www.monster.fr/emploi/recherche*",
-      "https://www.monster.fr/offres-demploi*"
+      "https://www.monster.fr/offres-demploi*",
+
+      "https://www.hellowork.com/fr-fr/emploi*"
 
     ],
     "content_scripts": [
@@ -35,8 +37,9 @@
           "https://www.welcometothejungle.com/fr/companies*",
 
           "https://www.monster.fr/emploi/recherche*",
-          "https://www.monster.fr/offres-demploi*"
-          
+          "https://www.monster.fr/offres-demploi*",
+
+          "https://www.hellowork.com/fr-fr/emploi*"
         ],
         "js": ["authorizedUrls.js", "websiteSelectors.js", "skillsData.js", "content.js"]
       }

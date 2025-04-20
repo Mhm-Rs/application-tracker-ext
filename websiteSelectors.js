@@ -29,4 +29,10 @@ const websiteSelectors = {
         location:"li[data-testid='jobDetailLocation']",
         jobDescription:"div[data-testid='svx-description-container-inner'] > div",
     },
+    hellowork:{
+        jobTitle:"span[data-cy='jobTitle']",
+        companyName:"span.tw-contents.tw-typo-m.tw-text-grey",
+        location:"span.tw-inline-flex.tw-typo-m.tw-text-grey",
+        jobDescription:"p.tw-typo-long-m.tw-break-words",
+    },
 };

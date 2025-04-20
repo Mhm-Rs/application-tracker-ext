@@ -12,5 +12,7 @@ const authorizedUrls = [
       "https://www.welcometothejungle.com/fr/companies/*/jobs*",
 
       "https://www.monster.fr/emploi/recherche*",
-      "https://www.monster.fr/offres-demploi*"
+      "https://www.monster.fr/offres-demploi*",
+
+      "https://www.hellowork.com/fr-fr/emplois*"
 ]
