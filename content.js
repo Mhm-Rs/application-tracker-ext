@@ -120,25 +120,26 @@ function createWidget() {
             "❌ Erreur de message :",
             chrome.runtime.lastError.message
           );
+          button.textContent = "Erreur !";
           showPopup(
-            "Erreur de Chrome : " +
+            "Erreur du navigateur : " +
               handleErrorMessage(chrome.runtime.lastError.message),
             true
           );
         } else if (response.success) {
           showPopup("Ajouté à Notion ✅");
         } else {
+          button.textContent = "Erreur !";
           showPopup("❌ Erreur : " + handleErrorMessage(response.error), true);
         }
 
         button.style.backgroundColor = "#1e7e34";
-        button.textContent = "✓ Enregistré !";
 
         setTimeout(() => {
           button.disabled = false;
           button.style.backgroundColor = "#28a745";
           button.innerHTML = originalContent;
-        }, 1500);
+        }, 2500);
       }
     );
   });
