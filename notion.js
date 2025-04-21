@@ -1,6 +1,29 @@
 // notion.js
-const NOTION_API_KEY=""
-const NOTION_DATABASE_ID=""
+let NOTION_API_KEY = null;
+let NOTION_DATABASE_ID = null;
+
+
+chrome.storage.local.get(["notionApiKey", "notionDatabaseId"], (result) => {
+  NOTION_API_KEY = result.notionApiKey;
+  NOTION_DATABASE_ID = result.notionDatabaseId;
+
+  if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
+    console.warn("⚠️ Clé API Notion ou ID de base de données manquant dans chrome.storage.local");
+  } else {
+    console.log("🔐 Clés Notion chargées depuis storage");
+  }
+});
+
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "local") {
+    if (changes.notionApiKey) NOTION_API_KEY = changes.notionApiKey.newValue;
+    if (changes.notionDatabaseId) NOTION_DATABASE_ID = changes.notionDatabaseId.newValue;
+
+    console.log("🔄 Mise à jour des clés Notion depuis storage");
+  }
+});
+
 
 async function addRowToNotion(payload) {
   if (await doesUrlAlreadyExistInDb(payload.jobUrl)) {

@@ -3,7 +3,7 @@
     "name": "Application Tracker",
     "version": "1.0",
     "description": "Track your job applications, effortlessly.",
-    "permissions": ["scripting", "activeTab"],
+    "permissions": ["scripting", "activeTab","storage"],
     "host_permissions": [
       "https://api.notion.com/*",
 
@@ -49,5 +49,6 @@
     },
     "action": {
       "default_title": "Application Tracker"
-    }
+    },
+    "options_page": "options.html"
   }

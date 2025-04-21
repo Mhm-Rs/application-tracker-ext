@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CandidaTrack - Configuration</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-color: #f4f4f4;
+      }
+
+      .container {
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 400px;
+      }
+
+      h2 {
+        text-align: center;
+        color: #333;
+        font-size: 24px;
+      }
+
+      label {
+        display: block;
+        margin-top: 15px;
+        font-size: 14px;
+        color: #555;
+      }
+
+      input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 14px;
+        background-color: #f9f9f9;
+      }
+
+      button {
+        margin-top: 20px;
+        padding: 12px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        width: 100%;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #218838;
+      }
+
+      button:active {
+        background-color: #1e7e34;
+      }
+
+      #customAlert {
+        display: none;
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 18px 30px;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 16px; /* ⬅️ Plus grand texte */
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        z-index: 9999;
+        font-family: Arial, sans-serif;
+        color: white;
+        max-width: 90%;
+        text-align: center;
+    }
+
+    .alert-success {
+        background-color: #28a745;
+    }
+
+    .alert-error {
+        background-color: #dc3545;
+    }
+
+    .alert-warning {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    </style>
+  </head>
+    <div id="customAlert"></div>
+  <body>
+    <div class="container">
+      <h2>CandidaTrack</h2>
+
+      <label>Cl&eacute; d'API Notion</label>
+      <input type="text" id="apiKey" placeholder="ntn_112233445566ABCDEFGHIJKLMNOPQRSTUVWXYZ"" />
+
+      <label>ID de la base de donn&eacute;es</label>
+      <input type="text" id="databaseId" placeholder="ABccAZ76022244AdZAEJAOHNSA" />
+
+      <button id="saveBtn">Sauvegarder</button>
+    </div>
+    <script src="options.js"></script>
+  </body>
+</html>
