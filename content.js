@@ -1,5 +1,24 @@
 /*
 *
+  Gestion de l'autotrack pour enregistrer les offres quand on clique sur le bouton Postuler
+*
+*/
+
+function setupAutoTrack() {
+  document.body.addEventListener("click", (event) => {
+    const selector = websiteSelectors[getSiteName(window.location.hostname)];
+    const applyBtn = event.target.closest(selector.applyBtn);
+    
+    if (applyBtn) {
+      console.log("✅ Détection clic sur bouton de candidature");
+      sendToTracker(extractJobDetails())
+    }
+  });
+}
+
+
+/*
+*
   Gestion du reload pour supprimer/afficher le widget, compatible SPA
 *
 */
@@ -103,45 +122,23 @@ function createWidget() {
   button.style.cursor = "pointer";
   button.style.fontSize = "14px";
 
+  // 💬 Disclaimer pour Monster
+  const siteName = getSiteName(window.location.hostname);
+  if (siteName === "monster") {
+    const disclaimer = document.createElement("div");
+    disclaimer.textContent =
+      "⚠️ Le mode automatique n’est pas disponible sur ce site. Cliquez sur le bouton ci-dessous pour enregistrer.";
+    disclaimer.style.fontSize = "12px";
+    disclaimer.style.color = "#a00";
+    disclaimer.style.marginBottom = "10px";
+    container.appendChild(disclaimer);
+  }
+
   button.addEventListener("click", () => {
     const jobDetails = extractJobDetails();
     console.log("The job details I got : ", jobDetails);
 
-    // 🔄 Ajout du spinner
-    const originalContent = button.innerHTML;
-    button.disabled = true;
-    button.innerHTML = `<div class="spinner"></div>`;
-
-    chrome.runtime.sendMessage(
-      { action: "saveToTracker", payload: jobDetails },
-      (response) => {
-        if (chrome.runtime.lastError) {
-          console.error(
-            "❌ Erreur de message :",
-            chrome.runtime.lastError.message
-          );
-          button.textContent = "Erreur !";
-          showPopup(
-            "Erreur du navigateur : " +
-              handleErrorMessage(chrome.runtime.lastError.message),
-            true
-          );
-        } else if (response.success) {
-          showPopup("Ajouté à Notion ✅");
-        } else {
-          button.textContent = "Erreur !";
-          showPopup("❌ Erreur : " + handleErrorMessage(response.error), true);
-        }
-
-        button.style.backgroundColor = "#1e7e34";
-
-        setTimeout(() => {
-          button.disabled = false;
-          button.style.backgroundColor = "#28a745";
-          button.innerHTML = originalContent;
-        }, 2500);
-      }
-    );
+    sendToTracker(jobDetails, button)
   });
 
   container.appendChild(title);
@@ -149,7 +146,7 @@ function createWidget() {
   document.body.appendChild(container);
 }
 
-function showPopup(message, isError = false) {
+function showPopup(message, isError = false, isExtended = false) {
   const popup = document.createElement("div");
   popup.textContent = message;
   popup.style.position = "fixed";
@@ -173,7 +170,44 @@ function showPopup(message, isError = false) {
   setTimeout(() => {
     popup.style.opacity = "0";
     setTimeout(() => popup.remove(), 300);
-  }, 2000);
+  }, isExtended ? 3000 : 2000);
+}
+
+function sendToTracker(jobDetails, button = null) {
+  const originalContent = button?.innerHTML;
+
+  if (button) {
+    button.disabled = true;
+    button.innerHTML = `<div class="spinner"></div>`;
+  }
+
+  chrome.runtime.sendMessage(
+    { action: "saveToTracker", payload: jobDetails },
+    (response) => {
+      if (chrome.runtime.lastError) {
+        console.error("❌ Erreur de message :", chrome.runtime.lastError.message);
+        if (button) button.textContent = "Erreur !";
+        showPopup(
+          "Erreur du navigateur : " + handleErrorMessage(chrome.runtime.lastError.message),
+          true
+        );
+      } else if (response.success) {
+        showPopup("Ajouté à Notion ✅");
+      } else {
+        if (button) button.textContent = "Erreur !";
+        showPopup("❌ Erreur : " + handleErrorMessage(response.error), true);
+      }
+
+      if (button) {
+        button.style.backgroundColor = "#1e7e34";
+        setTimeout(() => {
+          button.disabled = false;
+          button.style.backgroundColor = "#28a745";
+          button.innerHTML = originalContent;
+        }, 2500);
+      }
+    }
+  );
 }
 
 /*
@@ -234,6 +268,7 @@ function getSiteName(hostname) {
   return hostname;
 }
 
+
 /*
 *
   Gestion des erreurs
@@ -261,6 +296,8 @@ function handleErrorMessage(errorMessage) {
 */
 
 observeUrlChanges();
+setupAutoTrack();
+
 if (shouldInjectWidget(location.href)) {
   createWidget();
 }
