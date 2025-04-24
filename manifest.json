@@ -1,8 +1,8 @@
 {
     "manifest_version": 3,
-    "name": "Application Tracker",
+    "name": "Candidatrack",
     "version": "1.0",
-    "description": "Track your job applications, effortlessly.",
+    "description": "Gérez le suivi de vos candidatures, sans effort.",
     "permissions": ["scripting", "activeTab","storage"],
     "host_permissions": [
       "https://api.notion.com/*",
@@ -48,7 +48,12 @@
       "service_worker": "background.js"
     },
     "action": {
-      "default_title": "Application Tracker"
+      "default_title": "Candidatrack"
     },
-    "options_page": "options.html"
+    "options_page": "options.html",
+    "icons": {
+      "16": "candidatrack16.png",
+      "48": "candidatrack48.png",
+      "128": "candidatrack128.png"
+    }
   }
