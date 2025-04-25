@@ -3,7 +3,7 @@
     "name": "Candidatrack",
     "version": "1.0",
     "description": "Gérez le suivi de vos candidatures, sans effort.",
-    "permissions": ["scripting", "activeTab","storage"],
+    "permissions": ["storage"],
     "host_permissions": [
       "https://api.notion.com/*",
 
