@@ -100,6 +100,27 @@
         color: black;
     }
 
+    footer {
+    margin-top: 40px;
+    font-size: 14px;
+    color: #666;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer a {
+      color: #28a745;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    } 
+
     </style>
   </head>
     <div id="customAlert"></div>
@@ -114,6 +135,12 @@
       <input type="text" id="databaseId" placeholder="ABccAZ76022244AdZAEJAOHNSA" />
 
       <button id="saveBtn">Sauvegarder</button>
+      <footer>
+        <div class="footer-content">
+           <a href="https://docs.google.com/document/d/1hnx8AGYkEIW3e6CFSsr7e6q-vW_o7qCKWvraK-nrdPQ/edit?usp=sharing" target="_blank" id="docLink">📄 Documentation</a>
+          <small>Made by Mhm_Rs</small>
+        </div>
+      </footer>
     </div>
     <script src="options.js"></script>
   </body>

@@ -105,7 +105,7 @@ function createWidget() {
   container.style.fontFamily = "Arial, sans-serif";
 
   const title = document.createElement("div");
-  title.textContent = "Application Tracker";
+  title.textContent = "Candidatrack";
   title.style.fontWeight = "bold";
   title.style.marginBottom = "10px";
   title.style.fontSize = "16px";
